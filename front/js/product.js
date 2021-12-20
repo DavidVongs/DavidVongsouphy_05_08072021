@@ -43,5 +43,41 @@ async function kanapProductInformation() {
     console.log("Error : " + err);
   }
 }
-
 kanapProductInformation();
+
+//******Transfert des produits selectionnés par le client dans le panier */
+//Action effectuée au click sur le bouton "Ajouter au panier"
+const btnAjoutPanier = document.querySelector("#addToCart");
+btnAjoutPanier.addEventListener("click", (e) => {
+  e.preventDefault();
+  async function teste() {
+    let response = await fetch(urlKanap);
+    let data = await response.json();
+
+    //Récupération des données du produit
+    const selectColor = document.getElementById("colors");
+    const colorChoice = selectColor.options[selectColor.selectedIndex].text;
+    const formQuantity = document.getElementById("quantity").value;
+    const infoKanap = {
+      id: `${data._id}`,
+      img: `${data.imageUrl}`,
+      kName: `${data.name}`,
+      price: `${data.price}`,
+      color: `${colorChoice}`,
+      quantity: `${formQuantity}`,
+    };
+
+    //vérification de la présence d'un produit dans le storage
+    let productStorage = JSON.parse(localStorage.getItem("produit"));
+    //Ajout du produit dans le localStorage
+    if (!productStorage) {
+      productStorage = [];
+      productStorage.push(infoKanap);
+      localStorage.setItem("produit", JSON.stringify(productStorage));
+    } else {
+      productStorage.push(infoKanap);
+      localStorage.setItem("produit", JSON.stringify(productStorage));
+    }
+  }
+  teste();
+});

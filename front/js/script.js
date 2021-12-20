@@ -55,7 +55,6 @@ async function kanapAffichage() {
     for (let kanap of data) {
       //Création d'un lien unique pour chaque produit via son Id
       const kanapProductLink = document.querySelectorAll("#items a")[o];
-      console.log(kanapProductLink);
       kanapProductLink.setAttribute("href", `./product.html?id=${kanap._id}`);
 
       const kanapImg = document.querySelectorAll("#items article img")[o];
