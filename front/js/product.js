@@ -86,13 +86,13 @@ btnAjoutPanier.addEventListener("click", (e) => {
           `${infoKanap.id}` == `${kanap.id}` &&
           `${infoKanap.color}` == `${kanap.color}`
       );
-      //si oui, incrémenter la quantité
+      //si oui, incrémenter la quantité du produit existant
       if (indice > -1) {
         productStorage[indice].quantity =
           parseInt(`${productStorage[indice].quantity}`) +
           parseInt(`${infoKanap.quantity}`);
         localStorage.setItem("produit", JSON.stringify(productStorage));
-        //si non, incrémenter un nouvel objet
+        //si non, incrémenter un nouvel objet dans le tableau
       } else {
         productStorage.push(infoKanap);
         localStorage.setItem("produit", JSON.stringify(productStorage));
