@@ -1,7 +1,10 @@
-//Appel du local storage
+//******Appel du local storage */
+
 let productStorage = JSON.parse(localStorage.getItem("produit"));
+//****************************************************************** */
 
 //******Affichage du produit dans le panier */
+
 //Vérification de la présence d'élément dans le panier
 a = 0;
 if (!productStorage) {
@@ -60,29 +63,101 @@ if (!productStorage) {
     a = a + 1;
   }
 }
+//****************************************************************** */
 
-//******Récupération des quantités de produits */
-//Addition des quantités
-let sum = 0;
+//******Récupération des quantités et des prix de produits */
+
+let sumTotals = 0;
+let priceTotals = 0;
+
+//Addition des quantités et des prix
 if (productStorage) {
-  for (let i = 0; i < productStorage.length; i++) {
-    sum += parseInt(productStorage[i].quantity);
+  for (let t = 0; t < productStorage.length; t++) {
+    sumTotals += parseInt(productStorage[t].quantity);
+
+    priceTotals +=
+      parseInt(productStorage[t].price) * parseInt(productStorage[t].quantity);
   }
 }
 
 //Afficher le resultat
-const totalQuantity = (document.querySelector("#totalQuantity").innerHTML =
-  sum);
+function displayResults() {
+  document.querySelector("#totalQuantity").innerHTML = sumTotals;
+  document.querySelector("#totalPrice").innerHTML = priceTotals;
+}
+displayResults();
 
-//******Récupération des prix de produits */
-//Addition des prix
-let price = 0;
+//****************************************************************** */
+
+//******Fonction de suppression du produit dans le panier */
+function deleteItem(item) {
+  //Suppréssion dans le tableau, puis mise à jour du localStorage
+  productStorage.splice([item], 1);
+  localStorage.setItem("produit", JSON.stringify(productStorage));
+  //Supréssion de l'article dans le panier
+  cartItem.removeChild(cartArticle[item]);
+}
+//****************************************************************** */
+
+//******Fonction modification des totaux, prix et quantités, après suppréssion */
+function modificationTotalsAfterDelete(total) {
+  sumTotals -= productStorage[total].quantity;
+  priceTotals -=
+    parseInt(productStorage[total].price) *
+    parseInt(productStorage[total].quantity);
+}
+//****************************************************************** */
+
+//******Modification de la quantité dans le panier */
+const formQuantity = document.querySelectorAll(".itemQuantity");
+const productPrice = document.querySelectorAll(
+  ".cart__item__content__description p:nth-child(3)"
+);
+// Changement des quantités et prix des produit lors d'un changement de quantité dans le panier
 if (productStorage) {
-  for (let i = 0; i < productStorage.length; i++) {
-    price +=
-      parseInt(productStorage[i].price) * parseInt(productStorage[i].quantity);
+  //Détection du produit modifié
+  for (let c = 0; c < productStorage.length; c++) {
+    formQuantity[c].addEventListener("change", function () {
+      if (formQuantity[c].value > 0) {
+        //Modification des totaux + affichage
+        let plus = formQuantity[c].value - productStorage[c].quantity;
+        sumTotals += plus;
+        priceTotals += plus * productStorage[c].price;
+        displayResults();
+        //Ajout des modifications dans le localStorage
+        productStorage[c].quantity = formQuantity[c].value;
+        localStorage.setItem("produit", JSON.stringify(productStorage));
+        //Affichage du nouveau prix du produit
+        productPrice[c].innerHTML =
+          parseInt(productStorage[c].quantity) *
+            parseInt(productStorage[c].price) +
+          " €";
+      } else {
+        //Suppression de l'article si la quantité est égale à 0
+        modificationTotalsAfterDelete(c);
+        displayResults();
+        deleteItem(c);
+      }
+    });
   }
 }
+//****************************************************************** */
 
-//Afficher le resultat
-const totalPrice = (document.querySelector("#totalPrice").innerHTML = price);
+//******Gestion de la suppréssion d'un produit dans la page panier */
+const deleteBtn = document.querySelectorAll(".deleteItem");
+const cartItem = document.querySelector("#cart__items");
+const cartArticle = document.querySelectorAll(".cart__item");
+
+//Supréssion dans le panier et dans le localStorage, du produit selectionné
+if (productStorage) {
+  for (let d = 0; d < productStorage.length; d++) {
+    //Action sur le click du bouton "supprimer"
+    deleteBtn[d].addEventListener("click", function () {
+      //Modification des totaux, prix et quantités
+      modificationTotalsAfterDelete(d);
+      displayResults();
+      deleteItem(d);
+    });
+  }
+}
+//****************************************************************** */
