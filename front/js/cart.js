@@ -2,13 +2,14 @@
 //**************************PANIER********************************** */
 //****************************************************************** */
 
-//******Appel du local storage */
+//******Récupération des données produit du local storage */
 let productStorage = JSON.parse(localStorage.getItem("produit"));
 //****************************************************************** */
 
 //******Affichage du produit dans le panier */
-//Vérification de la présence d'élément dans le panier
-function panierVide() {
+
+//Fonction d'affichage du panier vide
+function emptyCart() {
   const creatArticleCartItem = document.createElement("article");
   creatArticleCartItem.classList.add("cart__item");
   const newArticleCartItem = document
@@ -17,96 +18,101 @@ function panierVide() {
   newArticleCartItem.innerHTML = "<p>Le panier est vide</p>";
 }
 
-a = 0;
-if (!productStorage) {
-  panierVide();
-} else {
-  for (let product of productStorage) {
-    //Création de l'article pour afficher les produit
-    const creatArticleCartItem = document.createElement("article");
-    creatArticleCartItem.classList.add("cart__item");
-    creatArticleCartItem.setAttribute("data-id", `${product.id}`);
-    creatArticleCartItem.setAttribute("data-color", `${product.color}`);
-    const newArticleCartItem = document.querySelector("#cart__items");
-    newArticleCartItem.appendChild(creatArticleCartItem);
+//Fonction permettant l'affichage, des produits choisis, dans le panier
+const cartProductDisplay = (a) => {
+  a = 0; // Variable permettant de selectionner le bon <article>
+  if (!productStorage) {
+    emptyCart();
+  } else {
+    for (let product of productStorage) {
+      //Création de la balise <article> pour afficher les produits
+      const creatArticleCartItem = document.createElement("article");
+      creatArticleCartItem.classList.add("cart__item");
+      creatArticleCartItem.setAttribute("data-id", `${product.id}`);
+      creatArticleCartItem.setAttribute("data-color", `${product.color}`);
+      const newArticleCartItem = document.querySelector("#cart__items");
+      newArticleCartItem.appendChild(creatArticleCartItem);
 
-    //Sélection de l'article pour afficher les produit
-    const section = document.querySelectorAll("#cart__items article")[a];
+      //Sélection de la balise <article> pour afficher les produits
+      const section = document.querySelectorAll("#cart__items article")[a];
 
-    //Affichage du produit avec les informations néccessaire
-    section.innerHTML = `
-    <div class="cart__item__img">
-    <img
-        src="${product.img}"
-        alt="${product.alt}"
-    />
-    </div>
-    <div class="cart__item__content">
-    <div class="cart__item__content__description">
-        <h2>${product.kName}</h2>
-        <p>${product.color}</p>
-        <p>${product.price * product.quantity} €</p>
-    </div>
-    <div class="cart__item__content__settings">
-        <div class="cart__item__content__settings__quantity">
-        <p>Qté :</p>
-        <input
-            type="number"
-            class="itemQuantity"
-            name="itemQuantity"
-            min="1"
-            max="100"
-            value="${product.quantity}"
-        />
-        </div>
-        <div class="cart__item__content__settings__delete">
-        <p class="deleteItem">Supprimer</p>
-        </div>
-    </div>
-    </div>
-    `;
-    a = a + 1;
+      //Ajout du code HTML permettant l'affichage des produits dans le panier
+      section.innerHTML = `
+      <div class="cart__item__img">
+      <img
+          src="${product.img}"
+          alt="${product.alt}"
+      />
+      </div>
+      <div class="cart__item__content">
+      <div class="cart__item__content__description">
+          <h2>${product.kName}</h2>
+          <p>${product.color}</p>
+          <p>${product.price * product.quantity} €</p>
+      </div>
+      <div class="cart__item__content__settings">
+          <div class="cart__item__content__settings__quantity">
+          <p>Qté :</p>
+          <input
+              type="number"
+              class="itemQuantity"
+              name="itemQuantity"
+              min="1"
+              max="100"
+              value="${product.quantity}"
+          />
+          </div>
+          <div class="cart__item__content__settings__delete">
+          <p class="deleteItem">Supprimer</p>
+          </div>
+      </div>
+      </div>
+      `;
+      a = a + 1;
+    }
   }
-}
+};
+cartProductDisplay();
 //****************************************************************** */
 
 //******Récupération des quantités et des prix de produits */
+
+//Variables qui contiendront le nombre total d'articles et la somme total du prix
 let sumTotals = 0;
 let priceTotals = 0;
 
-//Addition des quantités et des prix
-if (productStorage) {
-  for (let t = 0; t < productStorage.length; t++) {
-    sumTotals += parseInt(productStorage[t].quantity);
-
-    priceTotals +=
-      parseInt(productStorage[t].price) * parseInt(productStorage[t].quantity);
+//Fonction pour additionner les quantités, de produit et les prix, présent dans le panier
+const totalsProductAndPrice = () => {
+  if (productStorage) {
+    for (let t = 0; t < productStorage.length; t++) {
+      sumTotals += parseInt(productStorage[t].quantity);
+      priceTotals +=
+        parseInt(productStorage[t].price) *
+        parseInt(productStorage[t].quantity);
+    }
   }
-}
+};
+totalsProductAndPrice();
 
-//Afficher le resultat
+//Afficher le resultat des totaux
 function displayResults() {
   document.querySelector("#totalQuantity").innerHTML = sumTotals;
   document.querySelector("#totalPrice").innerHTML = priceTotals;
 }
 displayResults();
-
 //****************************************************************** */
 
-const cartItem = document.querySelector("#cart__items");
-const cartArticle = document.querySelectorAll(".cart__item");
-
-//******Fonction de suppression du produit dans le panier */
+//******Fonction de suppression, avec le bouton dédié, du produit dans le panier */
 function deleteItem(item) {
   //Suppréssion dans le tableau, puis mise à jour du localStorage
   productStorage.splice([item], 1);
   localStorage.setItem("produit", JSON.stringify(productStorage));
-  //Supréssion de l'article dans le panier
+  //Confirmation de la suppréssion
   alert("Ce produit a été supprimer du panier");
   window.location.href = "cart.html";
   if (productStorage.length < 1) {
     localStorage.removeItem("produit");
-    panierVide();
+    emptyCart();
   }
 }
 //****************************************************************** */
@@ -122,56 +128,68 @@ function modificationTotalsAfterDelete(total) {
 }
 //****************************************************************** */
 
-//******Modification de la quantité dans le panier */
+//******Modification de la quantité et du prix dans le panier */
+
+//Sélection des balises à modifier
 const formQuantity = document.querySelectorAll(".itemQuantity");
 const productPrice = document.querySelectorAll(
   ".cart__item__content__description p:nth-child(3)"
 );
-// Changement des quantités et prix des produit lors d'un changement de quantité dans le panier
-if (productStorage) {
-  //Détection du produit modifié
-  for (let c = 0; c < productStorage.length; c++) {
-    formQuantity[c].addEventListener("change", function () {
-      if (formQuantity[c].value > 0) {
-        //Modification des totaux + affichage
-        let plus = formQuantity[c].value - productStorage[c].quantity;
-        sumTotals += plus;
-        priceTotals += plus * productStorage[c].price;
-        displayResults();
-        //Ajout des modifications dans le localStorage
-        productStorage[c].quantity = formQuantity[c].value;
-        localStorage.setItem("produit", JSON.stringify(productStorage));
-        //Affichage du nouveau prix du produit
-        productPrice[c].innerHTML =
-          parseInt(productStorage[c].quantity) *
-            parseInt(productStorage[c].price) +
-          " €";
-      } else {
-        //Suppression de l'article si la quantité est égale à 0
-        modificationTotalsAfterDelete(c);
-        displayResults();
-        deleteItem(c);
-      }
-    });
+// Fonction pour le changement des quantités et prix des produit
+// lors d'un changement de quantité dans le panier
+const modifQuantity = () => {
+  if (productStorage) {
+    for (let c = 0; c < productStorage.length; c++) {
+      formQuantity[c].addEventListener("change", function () {
+        if (formQuantity[c].value > 0) {
+          //Modification des totaux + affichage
+          let quantityDiff = formQuantity[c].value - productStorage[c].quantity;
+          sumTotals += quantityDiff;
+          priceTotals += quantityDiff * productStorage[c].price;
+          displayResults();
+          //Ajout des modifications dans le localStorage
+          productStorage[c].quantity = formQuantity[c].value;
+          localStorage.setItem("produit", JSON.stringify(productStorage));
+          //Affichage du nouveau prix du produit
+          productPrice[c].innerHTML =
+            parseInt(productStorage[c].quantity) *
+              parseInt(productStorage[c].price) +
+            " €";
+        } else {
+          //Suppression de l'article si la quantité est égale à 0
+          modificationTotalsAfterDelete(c);
+          displayResults();
+          deleteItem(c);
+        }
+      });
+    }
   }
-}
+};
+modifQuantity();
 //****************************************************************** */
 
-//******Gestion de la suppréssion d'un produit dans la page panier */
+//******Gestion de la suppression d'un produit dans la page panier */
 
-//Supréssion dans le panier et dans le localStorage, du produit selectionné
-if (productStorage) {
-  const deleteBtn = document.querySelectorAll(".deleteItem");
-  for (let d = 0; d < productStorage.length; d++) {
-    //Action sur le click du bouton "supprimer"
-    deleteBtn[d].addEventListener("click", function () {
-      //Modification des totaux, prix et quantités
-      modificationTotalsAfterDelete(d);
-      displayResults();
-      deleteItem(d);
-    });
+//Sélection des boutons "Supprimer"
+const deleteBtn = document.querySelectorAll(".deleteItem");
+
+//Fonction pour la supression dans le panier et dans le localStorage,
+//du produit selectionné, après avoir appuyé sur le bouton "Supprimer"
+const useBtnSuppr = () => {
+  if (productStorage) {
+    for (let d = 0; d < productStorage.length; d++) {
+      deleteBtn[d].addEventListener("click", function (e) {
+        e.preventDefault;
+        //Modification des totaux, prix et quantités
+        modificationTotalsAfterDelete(d);
+        displayResults();
+        deleteItem(d);
+      });
+    }
   }
-}
+};
+useBtnSuppr();
+
 //****************************************************************** */
 //**************************FORMULAIRE****************************** */
 //****************************************************************** */
@@ -214,6 +232,7 @@ city.addEventListener("change", function () {
 
 //******Fonction de validation du champ email */
 const validEmail = function (inputEmail) {
+  //Création des conditions d'acceptation de l'email
   let emailRegExp = new RegExp(
     "^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$",
     "g"
@@ -232,6 +251,7 @@ const validEmail = function (inputEmail) {
     return false;
   }
 };
+//****************************************************************** */
 
 //Ecoute du champ Email
 const email = document.querySelector("#email");
@@ -239,99 +259,60 @@ email.addEventListener("change", function () {
   validEmail(email);
 });
 
-let orderStorage = JSON.parse(localStorage.getItem("clientOrder"));
-
+//******Fonction de récupération des id des produits dans le panier */
 const idItems = [];
-if (productStorage) {
-  let idItem = function () {
+const idItem = () => {
+  if (productStorage) {
     for (id of productStorage) {
       idItems.push(id.id);
     }
-  };
-  idItem();
-}
+  }
+};
+idItem();
+//****************************************************************** */
 
+//Sélection du bouton "Commander !"
 const order = document.querySelector("#order");
 
-// order.addEventListener("submit", function (event) {
-//   event.preventDefault();
-//   const contact = {
-//     firstName: firstName.value,
-//     lastName: lastName.value,
-//     adress: address.value,
-//     city: city.value,
-//     email: email.value,
-//     "product-ID": idItems,
-//   };
-//   console.log(JSON.stringify(contact));
-//   if (
-//     validInput(firstName) &&
-//     validInput(lastName) &&
-//     validInput(address) &&
-//     validInput(city) &&
-//     validEmail(email)
-//   ) {
-//     const promise01 = fetch("http://localhost:3000/api/products/order", {
-//       method: "POST",
-//       body: JSON.stringify(contact),
-//       headers: { "Content-Type": "application/json" },
-//     });
+//******Fonction d'envoi du formulaire pour récuperer le numéro de commande */
+order.addEventListener("click", function (event) {
+  event.preventDefault();
+  //Récupération des informations du formulaire
+  const contactClient = {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    address: address.value,
+    city: city.value,
+    email: email.value,
+  };
+  //Regroupement des informations à envoyer à l'API
+  const dataItem = {
+    contact: contactClient,
+    products: idItems,
+  };
+  //Vérification si tout le formulaire est correct avant l'envoi
+  if (
+    validInput(firstName) &&
+    validInput(lastName) &&
+    validInput(address) &&
+    validInput(city) &&
+    validEmail(email)
+  ) {
+    async function fetchPost() {
+      let response = await fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        body: JSON.stringify(dataItem),
+        headers: { "Content-Type": "application/json" },
+      });
+      let data = await response.json();
 
-// promise01.then(async (response) => {
-//   try {
-//     console.log(response);
-//     const contenu = await response.json();
-//     console.log(contenu);
-//   } catch (e) {
-//     console.log(e);
-//   }
-// });
-
-// if (!orderStorage) {
-//   orderStorage = [];
-//   orderStorage.push(contact);
-//   localStorage.setItem("clientOrder", JSON.stringify(orderStorage));
-// } else {
-//   orderStorage.push(contact);
-//   localStorage.setItem("clientOrder", JSON.stringify(orderStorage));
-// }
-//   } else {
-//     console.log("Le formulaire est incomplet ou incorrecte");
-//   }
-// });
-
-// let urlK = "http://localhost:3000/api/products/";
-
-const contactClient = {
-  firstName: "lol",
-  lastName: "lool",
-  adress: "lolo",
-  city: "lolo",
-  email: "lolo",
-};
-
-productsId = idItems;
-
-const dataItem = {
-  contact: contactClient,
-  products: productStorage.map((produit) => produit.id),
-};
-
-const promise01 = fetch("http://localhost:3000/api/products/order", {
-  method: "POST",
-  body: JSON.stringify(dataItem),
-  headers: { Accept: "application/json", "Content-Type": "application/json" },
-})
-  .then((response) => response.json())
-  .then((data) => {
-    console.log(JSON.stringify(data));
-  });
-
-// promise01.then(async (response) => {
-//   try {
-//     const contenu = await response.json();
-//     console.log(contenu);
-//   } catch (e) {
-//     console.log(e);
-//   }
-// });
+      localStorage.clear();
+      idOrder = `${data.orderId}`;
+      window.location.href = `./confirmation.html?id-order=${idOrder}`;
+    }
+    fetchPost();
+  } else {
+    alert("Le formulaire est incomplet ou incorrecte");
+  }
+});
+//****************************************************************** */
