@@ -1,6 +1,6 @@
 let urlKanap = "http://localhost:3000/api/products/";
 
-//******Création de balises <a> */
+//*******Création de balises <a> */
 
 const addLink = () => {
   const aKanap = document.createElement("a");

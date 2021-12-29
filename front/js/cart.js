@@ -321,4 +321,4 @@ order.addEventListener("click", function (event) {
     alert("Le formulaire est incomplet ou incorrecte");
   }
 });
-//****************************************************************** */
+//******************************************************************* */

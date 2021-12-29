@@ -1,7 +1,7 @@
 let params = new URLSearchParams(document.location.search);
 let id = params.get("id");
 
-//******Récupération du lien des produits */
+//*******Récupération du lien des produits */
 let urlKanap = `http://localhost:3000/api/products/${id}`;
 
 //******Fonction de récupération des données de l'API avec fetch */
