@@ -40,7 +40,8 @@ async function kanapProductInformation() {
       colorsKanap.innerHTML = `${data.colors[colors]}`;
     }
   } catch (err) {
-    console.log("Error : " + err);
+    console.error(err);
+    alert(`${err}`);
   }
 }
 kanapProductInformation();
@@ -52,53 +53,57 @@ const btnAjoutPanier = document.querySelector("#addToCart");
 btnAjoutPanier.addEventListener("click", (e) => {
   e.preventDefault();
 
-  //Récupération des données de l'API
-  async function ajoutKanap() {
-    let response = await fetch(urlKanap);
-    let data = await response.json();
+  try {
+    //Récupération des données de l'API
+    async function ajoutKanap() {
+      let response = await fetch(urlKanap);
+      let data = await response.json();
 
-    //Récupération des données du produit
-    const selectColor = document.getElementById("colors");
-    const colorChoice = selectColor.options[selectColor.selectedIndex].text;
-    const formQuantity = document.getElementById("quantity").value;
-    const infoKanap = {
-      id: `${data._id}`,
-      img: `${data.imageUrl}`,
-      kName: `${data.name}`,
-      price: `${data.price}`,
-      color: `${colorChoice}`,
-      quantity: `${formQuantity}`,
-      alt: `${data.altTxt}`,
-    };
+      //Récupération des données du produit
+      const selectColor = document.getElementById("colors");
+      const colorChoice = selectColor.options[selectColor.selectedIndex].text;
+      const formQuantity = document.getElementById("quantity").value;
+      const infoKanap = {
+        id: `${data._id}`,
+        img: `${data.imageUrl}`,
+        kName: `${data.name}`,
+        price: `${data.price}`,
+        color: `${colorChoice}`,
+        quantity: `${formQuantity}`,
+        alt: `${data.altTxt}`,
+      };
 
-    //vérification de la présence d'un produit dans le storage
-    let productStorage = JSON.parse(localStorage.getItem("produit"));
+      //vérification de la présence d'un produit dans le storage
+      let productStorage = JSON.parse(localStorage.getItem("produit"));
 
-    //Ajout du produit dans le localStorage
-    if (!productStorage) {
-      productStorage = [];
-      productStorage.push(infoKanap);
-      localStorage.setItem("produit", JSON.stringify(productStorage));
-    } else {
-      //Vérification de la présence ou non de doublon dans le localStorage
-      const indice = productStorage.findIndex(
-        (kanap) =>
-          `${infoKanap.id}` == `${kanap.id}` &&
-          `${infoKanap.color}` == `${kanap.color}`
-      );
-      //si oui, incrémenter la quantité du produit existant
-      if (indice > -1) {
-        productStorage[indice].quantity =
-          parseInt(`${productStorage[indice].quantity}`) +
-          parseInt(`${infoKanap.quantity}`);
-        localStorage.setItem("produit", JSON.stringify(productStorage));
-        //si non, incrémenter un nouvel objet dans le tableau
-      } else {
+      //Ajout du produit dans le localStorage
+      if (!productStorage) {
+        productStorage = [];
         productStorage.push(infoKanap);
         localStorage.setItem("produit", JSON.stringify(productStorage));
+      } else {
+        //Vérification de la présence ou non de doublon dans le localStorage
+        const indice = productStorage.findIndex(
+          (kanap) =>
+            `${infoKanap.id}` == `${kanap.id}` &&
+            `${infoKanap.color}` == `${kanap.color}`
+        );
+        //si oui, incrémenter la quantité du produit existant
+        if (indice > -1) {
+          productStorage[indice].quantity =
+            parseInt(`${productStorage[indice].quantity}`) +
+            parseInt(`${infoKanap.quantity}`);
+          localStorage.setItem("produit", JSON.stringify(productStorage));
+          //si non, incrémenter un nouvel objet dans le tableau
+        } else {
+          productStorage.push(infoKanap);
+          localStorage.setItem("produit", JSON.stringify(productStorage));
+        }
       }
     }
-  }
 
-  ajoutKanap();
+    ajoutKanap();
+  } catch (err) {
+    console.error(err);
+  }
 });

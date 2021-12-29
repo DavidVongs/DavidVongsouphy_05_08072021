@@ -298,19 +298,25 @@ order.addEventListener("click", function (event) {
     validInput(city) &&
     validEmail(email)
   ) {
-    async function fetchPost() {
-      let response = await fetch("http://localhost:3000/api/products/order", {
-        method: "POST",
-        body: JSON.stringify(dataItem),
-        headers: { "Content-Type": "application/json" },
-      });
-      let data = await response.json();
+    try {
+      async function fetchPost() {
+        let response = await fetch("http://localhost:3000/api/products/order", {
+          method: "POST",
+          body: JSON.stringify(dataItem),
+          headers: { "Content-Type": "application/json" },
+        });
+        let data = await response.json();
 
-      localStorage.clear();
-      idOrder = `${data.orderId}`;
-      window.location.href = `./confirmation.html?id-order=${idOrder}`;
+        alert("Commande validée");
+        localStorage.clear();
+        idOrder = `${data.orderId}`;
+        window.location.href = `./confirmation.html?id-order=${idOrder}`;
+      }
+      fetchPost();
+    } catch (err) {
+      console.error(err);
+      alert(`${err}`);
     }
-    fetchPost();
   } else {
     alert("Le formulaire est incomplet ou incorrecte");
   }
