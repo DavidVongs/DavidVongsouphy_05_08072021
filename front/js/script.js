@@ -9,33 +9,27 @@ const addLink = () => {
 
 //******Fonction générant les différentes balise de description du produit */
 
-async function addDescription(i) {
-  try {
-    const articleKanap = document.createElement("article");
-    const newArticle = document
-      .querySelectorAll("#items a")
-      [i].appendChild(articleKanap);
+const addDescription = (i) => {
+  const articleKanap = document.createElement("article");
+  const newArticle = document
+    .querySelectorAll("#items a")
+    [i].appendChild(articleKanap);
 
-    const addImg = document.createElement("img");
-    const newImg = document
-      .querySelectorAll("#items article")
-      [i].appendChild(addImg);
+  const addImg = document.createElement("img");
+  const newImg = document
+    .querySelectorAll("#items article")
+    [i].appendChild(addImg);
 
-    const addH3 = document.createElement("h3");
-    const newH3 = document
-      .querySelectorAll("#items article")
-      [i].appendChild(addH3);
-    addH3.classList.add("productName");
+  const addH3 = document.createElement("h3");
+  const newH3 = document
+    .querySelectorAll("#items article")
+    [i].appendChild(addH3);
+  addH3.classList.add("productName");
 
-    const addP = document.createElement("p");
-    const newP = document
-      .querySelectorAll("#items article")
-      [i].appendChild(addP);
-    addP.classList.add("productDescription");
-  } catch (err) {
-    console.log("Error : " + err);
-  }
-}
+  const addP = document.createElement("p");
+  const newP = document.querySelectorAll("#items article")[i].appendChild(addP);
+  addP.classList.add("productDescription");
+};
 
 //******Fonction de récupération des données de l'API avec fetch */
 

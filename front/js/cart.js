@@ -275,50 +275,56 @@ idItem();
 const order = document.querySelector("#order");
 
 //******Fonction d'envoi du formulaire pour récuperer le numéro de commande */
-order.addEventListener("click", function (event) {
-  event.preventDefault();
-  //Récupération des informations du formulaire
-  const contactClient = {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    address: address.value,
-    city: city.value,
-    email: email.value,
-  };
-  //Regroupement des informations à envoyer à l'API
-  const dataItem = {
-    contact: contactClient,
-    products: idItems,
-  };
-  //Vérification si tout le formulaire est correct avant l'envoi
-  if (
-    validInput(firstName) &&
-    validInput(lastName) &&
-    validInput(address) &&
-    validInput(city) &&
-    validEmail(email)
-  ) {
-    try {
-      async function fetchPost() {
-        let response = await fetch("http://localhost:3000/api/products/order", {
-          method: "POST",
-          body: JSON.stringify(dataItem),
-          headers: { "Content-Type": "application/json" },
-        });
-        let data = await response.json();
+const sendOrder = () => {
+  order.addEventListener("click", function (event) {
+    event.preventDefault();
+    //Récupération des informations du formulaire
+    const contactClient = {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      address: address.value,
+      city: city.value,
+      email: email.value,
+    };
+    //Regroupement des informations à envoyer à l'API
+    const dataItem = {
+      contact: contactClient,
+      products: idItems,
+    };
+    //Vérification si tout le formulaire est correct avant l'envoi
+    if (
+      validInput(firstName) &&
+      validInput(lastName) &&
+      validInput(address) &&
+      validInput(city) &&
+      validEmail(email)
+    ) {
+      try {
+        async function fetchPost() {
+          let response = await fetch(
+            "http://localhost:3000/api/products/order",
+            {
+              method: "POST",
+              body: JSON.stringify(dataItem),
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+          let data = await response.json();
 
-        alert("Commande validée");
-        localStorage.clear();
-        idOrder = `${data.orderId}`;
-        window.location.href = `./confirmation.html?id-order=${idOrder}`;
+          alert("Commande validée");
+          localStorage.clear();
+          idOrder = `${data.orderId}`;
+          window.location.href = `./confirmation.html?id-order=${idOrder}`;
+        }
+        fetchPost();
+      } catch (err) {
+        console.error(err);
+        alert(`${err}`);
       }
-      fetchPost();
-    } catch (err) {
-      console.error(err);
-      alert(`${err}`);
+    } else {
+      alert("Le formulaire est incomplet ou incorrecte");
     }
-  } else {
-    alert("Le formulaire est incomplet ou incorrecte");
-  }
-});
+  });
+};
+sendOrder();
 //******************************************************************* */
